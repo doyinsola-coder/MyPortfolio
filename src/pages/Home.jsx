@@ -280,15 +280,19 @@ function AboutSection({ prefersReducedMotion }) {
   return (
     <section id="about" ref={ref} className="py-20 sm:py-32 bg-gray-800 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Image */}
-        <motion.div
-          initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
-          animate={isInView ? { opacity: 1, x: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="relative order-2 lg:order-1 w-full h-80 sm:h-96 rounded-2xl overflow-hidden bg-gradient-to-br from-green-600/20 to-gray-800 border border-gray-700 flex items-center justify-center"
-        >
-          <Code2 className="text-green-600" size={64} />
-        </motion.div>
+       {/* Image */}
+<motion.div
+  initial={prefersReducedMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
+  animate={isInView ? { opacity: 1, x: 0 } : {}}
+  transition={{ duration: 0.6 }}
+  className="relative order-2 lg:order-1 w-full h-80 sm:h-96 rounded-2xl overflow-hidden bg-gray-800 border border-gray-700 flex items-center justify-center"
+>
+  <img
+    src="/me.jpg" 
+    alt="Abdulmubeen Doyinsola Abdulateef"
+    className="object-cover w-full h-full"
+  />
+</motion.div>
 
         {/* Text */}
         <motion.div
