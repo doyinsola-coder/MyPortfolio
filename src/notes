@@ -1,0 +1,38 @@
+ const projects = [
+    {
+      id: 1,
+      title: "SkillUp Nigeria",
+      description:
+        "A comprehensive web learning platform focused on helping Nigerian users upskill via curated courses and interactive lessons.",
+      tags: ["React", "Tailwind CSS", "Responsive Design"],
+      link: "https://skillup-nigeria-react.vercel.app/",
+      image: "/favicon.io.png",
+    },
+    {
+      id: 2,
+      title: "SaveSpecies",
+      description:
+        "An awareness and advocacy site for wildlife conservation designed to engage visitors with compelling visuals and informative content.",
+      tags: ["React", "Design", "Content Strategy"],
+      link: "https://save-species.vercel.app/",
+      image: "/SaveSpecies.jpg",
+    },
+    {
+      id: 3,
+      title: "Echoes of Madinah",
+      description:
+        "A digital platform centered around Islamic engagement, offering Seerah stories, daily reflections and quizzes for spiritual enrichment.",
+      tags: ["React", "Content Management", "Interactive Quizzes"],
+      link: "https://echoes-of-madinah.vercel.app/",
+      image: "/pattern.jpg",
+    },
+    {
+      id: 4,
+      title: "DoyinSpace Online Academy",
+      description:
+        "A frontend only online academy platform showcasing courses, instructor profiles, testimonials and enrollment calls-to-action.",
+      tags: ["React", "Course Management", "Modern UI"],
+      link: "https://doyinspace-online-academy.vercel.app/",
+      image: "/favicon.jpg",
+    },
+  ]
