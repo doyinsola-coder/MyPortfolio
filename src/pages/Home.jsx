@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Github, Linkedin, Mail, Download, ChevronDown, ExternalLink, Star, Circle } from 'lucide-react';
-import { SiMongodb, SiExpress, SiReact, SiNodedotjs, SiTypescript, SiNextdotjs, SiTailwindcss, SiSass, SiFramer, SiVercel, SiGit,  } from 'react-icons/si';
+import { SiMongodb, SiExpress, SiReact, SiNodedotjs, SiTypescript, SiNextdotjs, SiTailwindcss, SiSass, SiFramer, SiVercel, SiGit } from 'react-icons/si';
 
 const PortfolioPage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -25,13 +25,14 @@ const PortfolioPage = () => {
     { name: 'TypeScript', Icon: SiTypescript }
   ];
 
-const projects = [
+  const projects = [
     {
       id: 1,
       title: "SkillUp Nigeria",
       description: "A comprehensive web learning platform focused on helping Nigerian users upskill via curated courses and interactive lessons.",
       tags: ["React", "Tailwind CSS", "Responsive Design"],
       link: "https://skillup-nigeria-react.vercel.app/",
+      category: "Education",
       image: "/favicon.io.png",
     },
     {
@@ -40,6 +41,7 @@ const projects = [
       description: "An awareness and advocacy site for wildlife conservation designed to engage visitors with compelling visuals and informative content.",
       tags: ["React", "Design", "Content Strategy"],
       link: "https://save-species.vercel.app/",
+      category: "Advocacy",
       image: "/SaveSpecies.jpg",
     },
     {
@@ -48,6 +50,7 @@ const projects = [
       description: "A digital platform centered around Islamic engagement, offering Seerah stories, daily reflections and quizzes for spiritual enrichment.",
       tags: ["React", "Content Management", "Interactive Quizzes"],
       link: "https://echoes-of-madinah.vercel.app/",
+      category: "Spiritual",
       image: "/pattern.jpg",
     },
     {
@@ -56,6 +59,7 @@ const projects = [
       description: "A frontend only online academy platform showcasing courses, instructor profiles, testimonials and enrollment calls-to-action.",
       tags: ["React", "Course Management", "Modern UI"],
       link: "https://doyinspace-online-academy.vercel.app/",
+      category: "Education",
       image: "/favicon.jpg",
     },
   ];
@@ -71,12 +75,11 @@ const projects = [
       { name: "Express.js", Icon: SiExpress },
       { name: "MongoDB", Icon: SiMongodb },
     ],
-   backend: [
+    backend: [
       { name: "Git", Icon: SiGit }
     ]
   };
 
-  // Easy to edit - Add your reviews here
   const reviews = [
     {
       id: 1,
@@ -128,14 +131,13 @@ const projects = [
     }
   ];
 
-  // Easy to edit - Add your work experience here
   const journeyItems = [
     {
       id: 1,
       period: "Oct 2024 - Present",
       title: "Frontend Developer",
       company: "Malhub",
-      description: "Mentoring and coaching young frontend developers with passion and consistency  ."
+      description: "Mentoring and coaching young frontend developers with passion and consistency."
     },
     {
       id: 2,
@@ -149,7 +151,7 @@ const projects = [
       period: "Aug 2025 - present",
       title: "Full Stack Developer",
       company: "Freelance",
-      description: " Built full-stack web apps including e-commerce platforms, admin dashboards, authentication systems, and content-driven apps with clean UI, smooth animations, and scalable backends."
+      description: "Built full-stack web apps including e-commerce platforms, admin dashboards, authentication systems, and content-driven apps with clean UI, smooth animations, and scalable backends."
     }
   ];
 
@@ -300,12 +302,14 @@ const projects = [
               >
                 {[
                   { icon: Github, href: 'https://github.com/doyinsola-coder', label: 'GitHub' },
-                  { icon: Linkedin, href: 'https://linkedin.com/in/mdcode', label: 'LinkedIn' },
+                  { icon: Linkedin, href: 'https://linkedin.com/in/mdcodes', label: 'LinkedIn' },
                   { icon: Mail, href: '#contact', label: 'Email' }
                 ].map((social) => (
                   <a
                     key={social.label}
                     href={social.href}
+                    target={social.href.startsWith('http') ? '_blank' : undefined}
+                    rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                     className="w-10 h-10 sm:w-12 sm:h-12 bg-[#10367D]/30 backdrop-blur-sm border-2 border-[#10367D] rounded-full flex items-center justify-center text-[#EBEBEB] hover:border-[#FFC800] hover:text-[#FFC800] hover:bg-[#10367D]/50 transition-all duration-300"
                     aria-label={social.label}
                   >
@@ -417,20 +421,13 @@ const projects = [
                   
                   <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
                     <a
-                      href={project.liveLink}
+                      href={project.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-9 h-9 sm:w-10 sm:h-10 bg-[#FFC800] rounded-full flex items-center justify-center text-black hover:bg-[#10367D] hover:text-[#FFC800] transition-all duration-300 shadow-lg"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </a>
-                    <a
-                      href={project.githubLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-9 h-9 sm:w-10 sm:h-10 bg-[#10367D] rounded-full flex items-center justify-center text-[#EBEBEB] hover:bg-[#FFC800] hover:text-black transition-all duration-300 shadow-lg"
-                    >
-                      <Github className="w-4 h-4 sm:w-5 sm:h-5" />
                     </a>
                   </div>
 
@@ -445,9 +442,16 @@ const projects = [
                   <h3 className="text-lg sm:text-xl font-bold text-[#EBEBEB] mb-2 group-hover:text-[#FFC800] transition-colors duration-300">
                     {project.title}
                   </h3>
-                  <p className="text-[#EBEBEB]/70 text-xs sm:text-sm leading-relaxed">
+                  <p className="text-[#EBEBEB]/70 text-xs sm:text-sm leading-relaxed mb-3">
                     {project.description}
                   </p>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tags.map((tag, i) => (
+                      <span key={i} className="px-2 py-1 bg-[#10367D]/30 border border-[#10367D]/50 text-[#EBEBEB]/70 text-xs rounded-full">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                   <div className="mt-4 h-1 w-0 bg-gradient-to-r from-[#FFC800] to-[#10367D] group-hover:w-full transition-all duration-700"></div>
                 </div>
 
@@ -458,7 +462,9 @@ const projects = [
 
           <div className="text-center mt-12 sm:mt-16" style={{ animation: 'fadeInUp 1s ease-out 0.8s both' }}>
             <a
-              href="#all-projects"
+              href="https://github.com/doyinsola-coder"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-transparent border-2 border-[#FFC800] text-[#FFC800] font-semibold rounded-full hover:bg-[#FFC800] hover:text-black transition-all duration-300 shadow-lg shadow-[#FFC800]/20 hover:shadow-[#FFC800]/40 text-sm sm:text-base"
             >
               View All Projects
@@ -525,7 +531,7 @@ const projects = [
                 <div className="mb-4 sm:mb-6">
                   <h4 className="text-base sm:text-lg font-semibold text-[#EBEBEB] mb-2">MERN</h4>
                   <p className="text-xs sm:text-sm text-[#EBEBEB]/70 mb-3">
-                   Built a solid foundation in the MERN stack by learning and implementing MongoDB for databases, Express.js for backend APIs, React for dynamic frontends, and Node.js for server-side logic, while connecting them to create full-stack applications with authentication, CRUD operations, and responsive UIs
+                    Built a solid foundation in the MERN stack by learning and implementing MongoDB for databases, Express.js for backend APIs, React for dynamic frontends, and Node.js for server-side logic, while connecting them to create full-stack applications with authentication, CRUD operations, and responsive UIs
                   </p>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs sm:text-sm text-[#EBEBEB]/60">7/33</span>
