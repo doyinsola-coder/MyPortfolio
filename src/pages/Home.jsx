@@ -1,15 +1,61 @@
-import { desc } from "framer-motion/client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import React from "react";
+
 // ─── Brand Colors ────────────────────────────────────────────────────────────
 // Navy: #002583  |  Light: #E5E8EF  |  Gold: #FFB800
 
 // ─── SVG Logo (MD-CODES) ─────────────────────────────────────────────────────
 const MDCodesLogo = ({ size = 40 }) => (
-  <svg width={size} height={size} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="20,15 55,50 20,85 35,85 70,50 35,15" fill="#FFB800"/>
-    <rect x="25" y="42" width="20" height="16" fill="#FFB800" transform="rotate(-5 35 50)"/>
-  </svg>
+  <img
+    src="/logo.png"
+    alt="MD-CODES Logo"
+    style={{
+      height: size,
+      width: "auto",
+      maxWidth: "160px",
+      objectFit: "contain",
+      display: "block",
+    }}
+  />
+);
+
+// ─── Static Data (outside component to avoid re-creation on each render) ─────
+const PROJECTS = [
+  { id: 1, title: "SkillUp Nigeria", desc: "A comprehensive web learning platform helping Nigerian users upskill via curated courses and interactive lessons.", tags: ["React", "Tailwind CSS", "Responsive"], link: "https://skillup-nigeria-react.vercel.app/", category: "Education", type: "education" },
+  { id: 2, title: "SaveSpecies", desc: "An awareness and advocacy site for wildlife conservation with compelling visuals and informative content.", tags: ["React", "Design", "Content"], link: "https://save-species.vercel.app/", category: "Advocacy", type: "advocacy" },
+  { id: 3, title: "Echoes of Madinah", desc: "A digital platform for Islamic engagement — Seerah stories, daily reflections, and quizzes for spiritual enrichment.", tags: ["React", "CMS", "Quizzes"], link: "https://echoes-of-madinah.vercel.app/", category: "Spiritual", type: "spiritual" },
+  { id: 4, title: "DoyinSpace Academy", desc: "A frontend online academy platform showcasing courses, instructor profiles, testimonials and enrollment CTAs.", tags: ["React", "Modern UI", "Course"], link: "https://doyinspace-online-academy.vercel.app/", category: "Education", type: "academy" },
+  { id: 5, title: "TeeNaturals", desc: "A vibrant e-commerce site for a natural skincare brand, featuring product showcases, customer reviews, and a seamless shopping experience.", tags: ["React", "E-commerce", "UI/UX"], link: "https://tee-naturals.vercel.app/", category: "E-commerce", type: "ecommerce" },
+];
+
+const REVIEWS = [
+  { name: "Fatimah Ohunene", role: "Skincare Specialist", initials: "FO", rating: 4, review: "Clean design, smooth navigation, and excellent work presentation. Truly impressive portfolio." },
+  { name: "Temitope", role: "Developer", initials: "TM", rating: 5, review: "Exceptional work with impressive animations and a polished finish. Every detail is considered." },
+  { name: "Adam Ismail", role: "Developer", initials: "AI", rating: 5, review: "A perfectly executed portfolio with no noticeable flaws. The articles are insightful too." },
+  { name: "Anonymous", role: "Developer", initials: "AN", rating: 3, review: "Cool design with vibrant color palette. The animations add great character to the experience." },
+  { name: "Posterity", role: "Developer", initials: "PO", rating: 4, review: "Well-executed portfolio with a distinctive homepage that creates a strong first impression." },
+  { name: "Omolola", role: "Student", initials: "OL", rating: 4, review: "Great typography and structure that enhance readability. Very professional and engaging." },
+];
+
+const JOURNEY = [
+  { period: "Oct 2024 – Present", title: "Frontend Developer", company: "Malhub", desc: "Mentoring and coaching young frontend developers with passion and consistency." },
+  { period: "Jan 2025 – Present", title: "Frontend Developer", company: "Freelance", desc: "Building responsive and user-friendly web applications for diverse clients. Collaborating closely to deliver tailored solutions that meet business needs." },
+  { period: "Aug 2025 – Present", title: "Full Stack Developer", company: "Freelance", desc: "Built full-stack web apps including e-commerce platforms, admin dashboards, authentication systems, and content-driven apps with clean UI, smooth animations, and scalable backends." },
+];
+
+const TECH_STACK = ["React 19","Tailwind CSS","SASS","Framer Motion","Vercel","Node.js","Express.js","MongoDB","TypeScript","Next.js","Git"];
+
+const NAV_LINKS = ["home","projects","about","reviews","journey","contact"];
+
+// ─── Stars Component ──────────────────────────────────────────────────────────
+const Stars = ({ n }) => (
+  <div style={{ display: "flex", gap: 3 }}>
+    {[1,2,3,4,5].map(i => (
+      <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill={i <= n ? "#FFB800" : "none"} stroke="#FFB800" strokeWidth="2">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+    ))}
+  </div>
 );
 
 // ─── SVG Illustrations ────────────────────────────────────────────────────────
@@ -135,16 +181,14 @@ const Navbar = ({ active }) => {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const links = ["home","projects","about","reviews","journey","contact"];
-
-  const scrollTo = (id) => {
+  const scrollTo = useCallback((id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     setMenuOpen(false);
-  };
+  }, []);
 
   return (
     <nav style={{
@@ -155,37 +199,33 @@ const Navbar = ({ active }) => {
       transition: "all 0.3s ease",
       padding: "0 1.5rem"
     }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-        <button onClick={() => scrollTo("home")} style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer" }}>
+      <div style={{
+        maxWidth: 1200, margin: "0 auto",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        height: 64, minWidth: 0
+      }}>
+        {/* Logo button — flex-shrink allows it to compress, min-width:0 prevents overflow */}
+        <button
+          onClick={() => scrollTo("home")}
+          style={{
+            display: "flex", alignItems: "center", gap: 10,
+            background: "none", border: "none", cursor: "pointer",
+            flexShrink: 1, minWidth: 0, padding: 0
+          }}
+        >
           <MDCodesLogo size={36} />
-          <span style={{ color: "#FFB800", fontWeight: 700, fontSize: 18, fontFamily: "monospace", letterSpacing: 1 }}>MD-CODES</span>
         </button>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }} className="nav-desktop">
-          {links.map(l => (
-            <button key={l} onClick={() => scrollTo(l)} style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: active === l ? "#FFB800" : "rgba(229,232,239,0.7)",
-              fontWeight: active === l ? 600 : 400,
-              fontSize: 13, textTransform: "capitalize", letterSpacing: 0.5,
-              padding: "6px 12px", borderRadius: 20,
-              borderBottom: active === l ? "2px solid #FFB800" : "2px solid transparent",
-              transition: "all 0.2s"
-            }}>{l}</button>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }} className="nav-desktop">
+          {NAV_LINKS.map(l => (
+            <button key={l} onClick={() => scrollTo(l)} className={`nav-link${active === l ? " nav-link-active" : ""}`}>
+              {l}
+            </button>
           ))}
-          <button onClick={() => scrollTo("contact")} style={{
-            background: "#FFB800", color: "#002583", fontWeight: 700,
-            fontSize: 13, border: "none", borderRadius: 20,
-            padding: "8px 20px", cursor: "pointer", marginLeft: 8,
-            transition: "opacity 0.2s"
-          }}>Hire Me</button>
+          <button onClick={() => scrollTo("contact")} className="nav-hire">Hire Me</button>
         </div>
 
-        <button onClick={() => setMenuOpen(m => !m)} style={{
-          background: "none", border: "1px solid rgba(255,184,0,0.4)",
-          borderRadius: 8, padding: "6px 10px", cursor: "pointer",
-          color: "#FFB800", fontSize: 18, display: "none"
-        }} className="nav-hamburger">☰</button>
+        <button onClick={() => setMenuOpen(m => !m)} className="nav-hamburger">☰</button>
       </div>
 
       {menuOpen && (
@@ -193,7 +233,7 @@ const Navbar = ({ active }) => {
           background: "#002583", borderTop: "1px solid rgba(255,184,0,0.2)",
           padding: "1rem 1.5rem"
         }}>
-          {links.map(l => (
+          {NAV_LINKS.map(l => (
             <button key={l} onClick={() => scrollTo(l)} style={{
               display: "block", width: "100%", textAlign: "left",
               background: "none", border: "none", cursor: "pointer",
@@ -206,6 +246,28 @@ const Navbar = ({ active }) => {
       )}
 
       <style>{`
+        .nav-link {
+          background: none; border: none; cursor: pointer;
+          color: rgba(229,232,239,0.7); font-weight: 400;
+          font-size: 13px; text-transform: capitalize; letter-spacing: 0.5px;
+          padding: 6px 12px; border-radius: 20px;
+          border-bottom: 2px solid transparent;
+          transition: all 0.2s;
+        }
+        .nav-link:hover { color: #FFB800; }
+        .nav-link-active { color: #FFB800 !important; font-weight: 600 !important; border-bottom-color: #FFB800 !important; }
+        .nav-hire {
+          background: #FFB800; color: #002583; font-weight: 700;
+          font-size: 13px; border: none; border-radius: 20px;
+          padding: 8px 20px; cursor: pointer; margin-left: 8px;
+          transition: opacity 0.2s;
+        }
+        .nav-hire:hover { opacity: 0.85; }
+        .nav-hamburger {
+          background: none; border: 1px solid rgba(255,184,0,0.4);
+          border-radius: 8px; padding: 6px 10px; cursor: pointer;
+          color: #FFB800; font-size: 18px; display: none; flex-shrink: 0;
+        }
         @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-hamburger { display: block !important; }
@@ -234,63 +296,28 @@ export default function PortfolioPage() {
       },
       { threshold: 0.3 }
     );
-    ["home","projects","about","reviews","journey","contact"].forEach(id => {
+    NAV_LINKS.forEach(id => {
       const el = document.getElementById(id);
       if (el) observer.observe(el);
     });
     return () => observer.disconnect();
   }, []);
 
-  // ─── WhatsApp Contact Handler ─────────────────────────────────────────────
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     const text =
       `Hello Abdullateef! 👋%0A%0A` +
       `My name is ${encodeURIComponent(formData.name)}%0A` +
       `Email: ${encodeURIComponent(formData.email)}%0A%0A` +
       `${encodeURIComponent(formData.message)}`;
-    const whatsappUrl = `https://wa.me/2349035667678?text=${text}`;
-    window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/2349035667678?text=${text}`, "_blank", "noopener,noreferrer");
     setFormStatus("sent");
     setFormData({ name: "", email: "", message: "" });
-  };
+  }, [formData]);
 
-  const projects = [
-    { id: 1, title: "SkillUp Nigeria", desc: "A comprehensive web learning platform helping Nigerian users upskill via curated courses and interactive lessons.", tags: ["React", "Tailwind CSS", "Responsive"], link: "https://skillup-nigeria-react.vercel.app/", category: "Education", type: "education" },
-    { id: 2, title: "SaveSpecies", desc: "An awareness and advocacy site for wildlife conservation with compelling visuals and informative content.", tags: ["React", "Design", "Content"], link: "https://save-species.vercel.app/", category: "Advocacy", type: "advocacy" },
-    { id: 3, title: "Echoes of Madinah", desc: "A digital platform for Islamic engagement — Seerah stories, daily reflections, and quizzes for spiritual enrichment.", tags: ["React", "CMS", "Quizzes"], link: "https://echoes-of-madinah.vercel.app/", category: "Spiritual", type: "spiritual" },
-    { id: 4, title: "DoyinSpace Academy", desc: "A frontend online academy platform showcasing courses, instructor profiles, testimonials and enrollment CTAs.", tags: ["React", "Modern UI", "Course"], link: "https://doyinspace-online-academy.vercel.app/", category: "Education", type: "academy" },
-    {id: 5, title: "TeeNaturals", desc: "A vibrant e-commerce site for a natural skincare brand, featuring product showcases, customer reviews, and a seamless shopping experience.", tags: ["React", "E-commerce", "UI/UX"], link: "https://tee-naturals.vercel.app/", category: "E-commerce", type: "ecommerce"},
-  ];
-
-  const reviews = [
-    { name: "Fatimah Ohunene", role: "Skincare Specialist", initials: "FO", rating: 4, review: "Clean design, smooth navigation, and excellent work presentation. Truly impressive portfolio." },
-    { name: "Temitope", role: "Developer", initials: "TM", rating: 5, review: "Exceptional work with impressive animations and a polished finish. Every detail is considered." },
-    { name: "Adam Ismail", role: "Developer", initials: "AI", rating: 5, review: "A perfectly executed portfolio with no noticeable flaws. The articles are insightful too." },
-    { name: "Anonymous", role: "Developer", initials: "AN", rating: 3, review: "Cool design with vibrant color palette. The animations add great character to the experience." },
-    { name: "Posterity", role: "Developer", initials: "PO", rating: 4, review: "Well-executed portfolio with a distinctive homepage that creates a strong first impression." },
-    { name: "Omolola", role: "Student", initials: "OL", rating: 4, review: "Great typography and structure that enhance readability. Very professional and engaging." },
-  ];
-
-  const journey = [
-    { period: "Oct 2024 – Present", title: "Frontend Developer", company: "Malhub", desc: "Mentoring and coaching young frontend developers with passion and consistency." },
-    { period: "Jan 2025 – Present", title: "Frontend Developer", company: "Freelance", desc: "Building responsive and user-friendly web applications for diverse clients. Collaborating closely to deliver tailored solutions that meet business needs." },
-    { period: "Aug 2025 – Present", title: "Full Stack Developer", company: "Freelance", desc: "Built full-stack web apps including e-commerce platforms, admin dashboards, authentication systems, and content-driven apps with clean UI, smooth animations, and scalable backends." },
-  ];
-
-  const techStack = ["React 19","Tailwind CSS","SASS","Framer Motion","Vercel","Node.js","Express.js","MongoDB","TypeScript","Next.js","Git"];
-
-  const Stars = ({ n }) => (
-    <div style={{ display: "flex", gap: 3 }}>
-      {[1,2,3,4,5].map(i => (
-        <svg key={i} width="14" height="14" viewBox="0 0 24 24" fill={i <= n ? "#FFB800" : "none"} stroke="#FFB800" strokeWidth="2">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-      ))}
-    </div>
-  );
-
-  const fadeIn = (id) => visibleSections.has(id) ? { opacity: 1, transform: "translateY(0)" } : { opacity: 0, transform: "translateY(30px)" };
+  const fadeIn = (id) => visibleSections.has(id)
+    ? { opacity: 1, transform: "translateY(0)" }
+    : { opacity: 0, transform: "translateY(30px)" };
   const transition = { transition: "opacity 0.6s ease, transform 0.6s ease" };
 
   return (
@@ -311,7 +338,7 @@ export default function PortfolioPage() {
 
             <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 4.5rem)", fontWeight: 800, lineHeight: 1.1, marginBottom: "1rem", color: "#E5E8EF" }}>
               Hello,<br/>
-              <span style={{ color: "#FFB800" }}>I'm Abdullateef</span>
+              <span style={{ color: "#FFB800" }}>I'm Abdulmubeen</span>
             </h1>
 
             <p style={{ fontSize: "clamp(1rem, 2vw, 1.25rem)", color: "rgba(229,232,239,0.7)", marginBottom: "1.5rem", lineHeight: 1.7 }}>
@@ -329,15 +356,10 @@ export default function PortfolioPage() {
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: "2rem" }}>
               <a href="#contact" onClick={e => { e.preventDefault(); document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }); }}
-                style={{ background: "#FFB800", color: "#002583", fontWeight: 700, padding: "12px 28px", borderRadius: 30, textDecoration: "none", fontSize: 14, display: "inline-flex", alignItems: "center", gap: 8, transition: "opacity 0.2s" }}
-                onMouseOver={e => e.currentTarget.style.opacity = "0.85"}
-                onMouseOut={e => e.currentTarget.style.opacity = "1"}>
+                className="btn-primary" style={{ textDecoration: "none" }}>
                 ✉ Get In Touch
               </a>
-              <a href="/Abdulateef Doyinsola Abdulmubeen - CV.pdf" download
-                style={{ background: "transparent", color: "#E5E8EF", fontWeight: 600, padding: "12px 28px", borderRadius: 30, textDecoration: "none", fontSize: 14, border: "1.5px solid rgba(229,232,239,0.3)", display: "inline-flex", alignItems: "center", gap: 8, transition: "border-color 0.2s" }}
-                onMouseOver={e => e.currentTarget.style.borderColor = "#FFB800"}
-                onMouseOut={e => e.currentTarget.style.borderColor = "rgba(229,232,239,0.3)"}>
+              <a href="/Abdulateef Doyinsola Abdulmubeen - CV.pdf" download className="btn-outline" style={{ textDecoration: "none" }}>
                 ↓ Download CV
               </a>
             </div>
@@ -348,11 +370,8 @@ export default function PortfolioPage() {
                 { label: "LinkedIn", href: "https://linkedin.com/in/mdcodes", icon: "in" },
                 { label: "WhatsApp", href: "https://wa.me/2349035667678", icon: "✉" },
               ].map(s => (
-                <a key={s.label} href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noopener noreferrer"
-                  title={s.label}
-                  style={{ width: 44, height: 44, borderRadius: "50%", border: "1.5px solid rgba(255,184,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", color: "#FFB800", textDecoration: "none", fontSize: 14, fontWeight: 700, fontFamily: "monospace", transition: "background 0.2s" }}
-                  onMouseOver={e => e.currentTarget.style.background = "rgba(255,184,0,0.15)"}
-                  onMouseOut={e => e.currentTarget.style.background = "transparent"}>
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
+                  title={s.label} className="social-icon">
                   {s.icon}
                 </a>
               ))}
@@ -384,14 +403,12 @@ export default function PortfolioPage() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
-            {projects.map((p, i) => (
-              <div key={p.id} style={{
+            {PROJECTS.map((p, i) => (
+              <div key={p.id} className="project-card" style={{
                 background: "rgba(0,37,131,0.4)", border: "1px solid rgba(255,184,0,0.15)",
-                borderRadius: 16, overflow: "hidden", transition: "transform 0.3s, border-color 0.3s, box-shadow 0.3s",
+                borderRadius: 16, overflow: "hidden",
                 animationDelay: `${i * 0.1}s`, ...fadeIn("projects"), ...transition
-              }}
-                onMouseOver={e => { e.currentTarget.style.transform = "translateY(-6px)"; e.currentTarget.style.borderColor = "rgba(255,184,0,0.5)"; e.currentTarget.style.boxShadow = "0 16px 40px rgba(255,184,0,0.12)"; }}
-                onMouseOut={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "rgba(255,184,0,0.15)"; e.currentTarget.style.boxShadow = "none"; }}>
+              }}>
                 <div style={{ height: 180, overflow: "hidden", position: "relative" }}>
                   <ProjectIllustration type={p.type} />
                   <div style={{ position: "absolute", top: 12, left: 12, background: "rgba(0,17,46,0.85)", border: "1px solid rgba(255,184,0,0.5)", borderRadius: 20, padding: "4px 12px", fontSize: 11, color: "#FFB800", fontWeight: 600 }}>
@@ -406,10 +423,7 @@ export default function PortfolioPage() {
                       <span key={t} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 10, background: "rgba(0,37,131,0.6)", border: "1px solid rgba(255,184,0,0.2)", color: "rgba(229,232,239,0.7)" }}>{t}</span>
                     ))}
                   </div>
-                  <a href={p.link} target="_blank" rel="noopener noreferrer"
-                    style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, color: "#FFB800", textDecoration: "none" }}
-                    onMouseOver={e => e.currentTarget.style.opacity = "0.8"}
-                    onMouseOut={e => e.currentTarget.style.opacity = "1"}>
+                  <a href={p.link} target="_blank" rel="noopener noreferrer" className="link-gold">
                     View Live ↗
                   </a>
                 </div>
@@ -418,10 +432,7 @@ export default function PortfolioPage() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: "3rem" }}>
-            <a href="https://github.com/doyinsola-coder" target="_blank" rel="noopener noreferrer"
-              style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", borderRadius: 30, border: "1.5px solid #FFB800", color: "#FFB800", textDecoration: "none", fontSize: 14, fontWeight: 600, transition: "background 0.2s" }}
-              onMouseOver={e => e.currentTarget.style.background = "rgba(255,184,0,0.1)"}
-              onMouseOut={e => e.currentTarget.style.background = "transparent"}>
+            <a href="https://github.com/doyinsola-coder" target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ textDecoration: "none" }}>
               View All on GitHub ↗
             </a>
           </div>
@@ -459,23 +470,16 @@ export default function PortfolioPage() {
               <div style={{ background: "rgba(0,17,46,0.6)", borderRadius: 8, height: 6, overflow: "hidden", marginBottom: 10 }}>
                 <div style={{ height: "100%", width: "21%", background: "linear-gradient(90deg, #FFB800, #002583)", borderRadius: 8 }}/>
               </div>
-              <a href="https://res.cloudinary.com/decgjhtlb/image/upload/v1768944666/cert_p5i4cy.jpg" target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 13, color: "#FFB800", textDecoration: "none" }}>View Certificate ↗</a>
+              <a href="https://res.cloudinary.com/decgjhtlb/image/upload/v1768944666/cert_p5i4cy.jpg" target="_blank" rel="noopener noreferrer" className="link-gold">
+                View Certificate ↗
+              </a>
             </div>
 
             <div>
               <p style={{ fontSize: 12, color: "#FFB800", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Technical Arsenal</p>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {techStack.map(t => (
-                  <span key={t} style={{
-                    fontSize: 12, padding: "5px 14px", borderRadius: 20,
-                    background: "rgba(0,37,131,0.6)", border: "1px solid rgba(255,184,0,0.25)",
-                    color: "rgba(229,232,239,0.8)", transition: "border-color 0.2s, color 0.2s", cursor: "default"
-                  }}
-                    onMouseOver={e => { e.currentTarget.style.borderColor = "#FFB800"; e.currentTarget.style.color = "#FFB800"; }}
-                    onMouseOut={e => { e.currentTarget.style.borderColor = "rgba(255,184,0,0.25)"; e.currentTarget.style.color = "rgba(229,232,239,0.8)"; }}>
-                    {t}
-                  </span>
+                {TECH_STACK.map(t => (
+                  <span key={t} className="tech-tag">{t}</span>
                 ))}
               </div>
             </div>
@@ -497,14 +501,12 @@ export default function PortfolioPage() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.25rem" }}>
-            {reviews.map((r, i) => (
-              <div key={i} style={{
+            {REVIEWS.map((r, i) => (
+              <div key={i} className="review-card" style={{
                 background: "rgba(0,37,131,0.4)", border: "1px solid rgba(255,184,0,0.12)",
-                borderRadius: 16, padding: "1.5rem", transition: "transform 0.3s, border-color 0.3s",
+                borderRadius: 16, padding: "1.5rem",
                 ...fadeIn("reviews"), ...transition
-              }}
-                onMouseOver={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.borderColor = "rgba(255,184,0,0.4)"; }}
-                onMouseOut={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "rgba(255,184,0,0.12)"; }}>
+              }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
                   <div style={{ width: 46, height: 46, borderRadius: "50%", background: "linear-gradient(135deg, #002583, #FFB800)", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14, color: "#E5E8EF", flexShrink: 0 }}>
                     {r.initials}
@@ -534,18 +536,14 @@ export default function PortfolioPage() {
 
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 2, background: "linear-gradient(to bottom, #FFB800, rgba(0,37,131,0.3))", borderRadius: 2 }}/>
-
             <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-              {journey.map((j, i) => (
+              {JOURNEY.map((j, i) => (
                 <div key={i} style={{ paddingLeft: 60, position: "relative", ...fadeIn("journey"), ...transition }}>
                   <div style={{ position: "absolute", left: 13, top: 18, width: 16, height: 16, borderRadius: "50%", background: "#FFB800", border: "3px solid #00112e", boxShadow: "0 0 12px rgba(255,184,0,0.5)" }}/>
-
-                  <div style={{
+                  <div className="journey-card" style={{
                     background: "rgba(0,37,131,0.45)", border: "1px solid rgba(255,184,0,0.15)",
-                    borderRadius: 14, padding: "1.5rem", transition: "border-color 0.3s"
-                  }}
-                    onMouseOver={e => e.currentTarget.style.borderColor = "rgba(255,184,0,0.4)"}
-                    onMouseOut={e => e.currentTarget.style.borderColor = "rgba(255,184,0,0.15)"}>
+                    borderRadius: 14, padding: "1.5rem"
+                  }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "rgba(255,184,0,0.1)", border: "1px solid rgba(255,184,0,0.3)", borderRadius: 20, padding: "4px 12px", marginBottom: 12 }}>
                       <span style={{ fontSize: 12, color: "#FFB800", fontWeight: 600 }}>◉ {j.period}</span>
                     </div>
@@ -573,20 +571,7 @@ export default function PortfolioPage() {
             </p>
           </div>
 
-          {/* WhatsApp direct badge */}
-          <a
-            href="https://wa.me/2349035667678"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "flex", alignItems: "center", gap: 12,
-              background: "rgba(37,211,102,0.1)", border: "1px solid rgba(37,211,102,0.35)",
-              borderRadius: 14, padding: "14px 20px", marginBottom: "2rem",
-              textDecoration: "none", transition: "background 0.2s"
-            }}
-            onMouseOver={e => e.currentTarget.style.background = "rgba(37,211,102,0.18)"}
-            onMouseOut={e => e.currentTarget.style.background = "rgba(37,211,102,0.1)"}>
-            {/* WhatsApp SVG icon */}
+          <a href="https://wa.me/2349035667678" target="_blank" rel="noopener noreferrer" className="wa-badge">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="16" cy="16" r="16" fill="#25D366"/>
               <path d="M22.5 9.5A8.9 8.9 0 0 0 16 7a8.96 8.96 0 0 0-7.74 13.44L7 25l4.7-1.23A8.95 8.95 0 0 0 16 25a8.96 8.96 0 0 0 6.5-15.5zm-6.5 13.76a7.44 7.44 0 0 1-3.79-1.04l-.27-.16-2.79.73.75-2.72-.18-.28A7.46 7.46 0 1 1 16 23.26zm4.09-5.59c-.22-.11-1.32-.65-1.52-.73s-.35-.11-.5.11-.57.73-.7.88-.26.17-.48.06a6.08 6.08 0 0 1-1.79-1.1 6.73 6.73 0 0 1-1.24-1.54c-.13-.22 0-.34.1-.45s.22-.26.33-.39a1.5 1.5 0 0 0 .22-.37.41.41 0 0 0-.02-.39c-.06-.11-.5-1.2-.68-1.64s-.36-.37-.5-.38h-.42a.81.81 0 0 0-.59.28 2.47 2.47 0 0 0-.77 1.84 4.29 4.29 0 0 0 .9 2.27 9.84 9.84 0 0 0 3.77 3.33c.53.23.94.37 1.26.47a3.03 3.03 0 0 0 1.39.09 2.27 2.27 0 0 0 1.49-1.05 1.84 1.84 0 0 0 .13-1.05c-.06-.09-.2-.15-.42-.26z" fill="white"/>
@@ -611,14 +596,7 @@ export default function PortfolioPage() {
                   onChange={e => setFormData(d => ({ ...d, [f.name]: e.target.value }))}
                   placeholder={f.placeholder}
                   required
-                  style={{
-                    width: "100%", padding: "12px 16px", borderRadius: 10,
-                    background: "rgba(0,37,131,0.4)", border: "1px solid rgba(255,184,0,0.2)",
-                    color: "#E5E8EF", fontSize: 14, outline: "none", boxSizing: "border-box",
-                    transition: "border-color 0.2s"
-                  }}
-                  onFocus={e => e.target.style.borderColor = "#FFB800"}
-                  onBlur={e => e.target.style.borderColor = "rgba(255,184,0,0.2)"}
+                  className="form-input"
                 />
               </div>
             ))}
@@ -630,33 +608,17 @@ export default function PortfolioPage() {
                 placeholder="Tell me about your project..."
                 rows={5}
                 required
-                style={{
-                  width: "100%", padding: "12px 16px", borderRadius: 10,
-                  background: "rgba(0,37,131,0.4)", border: "1px solid rgba(255,184,0,0.2)",
-                  color: "#E5E8EF", fontSize: 14, outline: "none", resize: "vertical", boxSizing: "border-box",
-                  fontFamily: "inherit", transition: "border-color 0.2s"
-                }}
-                onFocus={e => e.target.style.borderColor = "#FFB800"}
-                onBlur={e => e.target.style.borderColor = "rgba(255,184,0,0.2)"}
+                className="form-input"
+                style={{ resize: "vertical", fontFamily: "inherit" }}
               />
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
-              <button
-                type="submit"
-                disabled={formStatus === "sending"}
-                style={{
-                  background: formStatus === "sent" ? "#25D366" : "#FFB800",
-                  color: formStatus === "sent" ? "#fff" : "#002583",
-                  fontWeight: 700, fontSize: 15,
-                  border: "none", borderRadius: 30, padding: "14px 32px",
-                  cursor: formStatus === "sending" ? "not-allowed" : "pointer",
-                  transition: "opacity 0.2s, background 0.3s",
-                  display: "inline-flex", alignItems: "center", gap: 10
-                }}
-                onMouseOver={e => { if (formStatus !== "sending") e.currentTarget.style.opacity = "0.85"; }}
-                onMouseOut={e => e.currentTarget.style.opacity = "1"}>
-                {/* WhatsApp icon inside button */}
+              <button type="submit" disabled={formStatus === "sending"} className="btn-submit" style={{
+                background: formStatus === "sent" ? "#25D366" : "#FFB800",
+                color: formStatus === "sent" ? "#fff" : "#002583",
+                cursor: formStatus === "sending" ? "not-allowed" : "pointer",
+              }}>
                 <svg width="18" height="18" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="16" cy="16" r="16" fill={formStatus === "sent" ? "rgba(255,255,255,0.25)" : "#002583"} opacity="0.3"/>
                   <path d="M22.5 9.5A8.9 8.9 0 0 0 16 7a8.96 8.96 0 0 0-7.74 13.44L7 25l4.7-1.23A8.95 8.95 0 0 0 16 25a8.96 8.96 0 0 0 6.5-15.5zm-6.5 13.76a7.44 7.44 0 0 1-3.79-1.04l-.27-.16-2.79.73.75-2.72-.18-.28A7.46 7.46 0 1 1 16 23.26zm4.09-5.59c-.22-.11-1.32-.65-1.52-.73s-.35-.11-.5.11-.57.73-.7.88-.26.17-.48.06a6.08 6.08 0 0 1-1.79-1.1 6.73 6.73 0 0 1-1.24-1.54c-.13-.22 0-.34.1-.45s.22-.26.33-.39a1.5 1.5 0 0 0 .22-.37.41.41 0 0 0-.02-.39c-.06-.11-.5-1.2-.68-1.64s-.36-.37-.5-.38h-.42a.81.81 0 0 0-.59.28 2.47 2.47 0 0 0-.77 1.84 4.29 4.29 0 0 0 .9 2.27 9.84 9.84 0 0 0 3.77 3.33c.53.23.94.37 1.26.47a3.03 3.03 0 0 0 1.39.09 2.27 2.27 0 0 0 1.49-1.05 1.84 1.84 0 0 0 .13-1.05c-.06-.09-.2-.15-.42-.26z" fill={formStatus === "sent" ? "white" : "#002583"}/>
@@ -675,15 +637,11 @@ export default function PortfolioPage() {
       <footer style={{ borderTop: "1px solid rgba(255,184,0,0.15)", padding: "2.5rem 1.5rem", textAlign: "center" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16 }}>
           <MDCodesLogo size={30} />
-          <span style={{ color: "#FFB800", fontWeight: 700, fontFamily: "monospace", fontSize: 16 }}>MD-CODES</span>
         </div>
-        <p style={{ fontSize: 13, color: "rgba(229,232,239,0.4)", marginBottom: 16 }}>Building Digital Web Solutions</p>
-        <div style={{ display: "flex", justifyContent: "center", gap: 20 }}>
-          {["home","projects","about","reviews","journey","contact"].map(l => (
+        <div style={{ display: "flex", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
+          {NAV_LINKS.map(l => (
             <button key={l} onClick={() => document.getElementById(l)?.scrollIntoView({ behavior: "smooth" })}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "rgba(229,232,239,0.5)", fontSize: 12, textTransform: "capitalize", transition: "color 0.2s" }}
-              onMouseOver={e => e.currentTarget.style.color = "#FFB800"}
-              onMouseOut={e => e.currentTarget.style.color = "rgba(229,232,239,0.5)"}>
+              className="footer-link">
               {l}
             </button>
           ))}
@@ -702,14 +660,105 @@ export default function PortfolioPage() {
           0%, 100% { transform: translateX(-50%) translateY(0); }
           50% { transform: translateX(-50%) translateY(-8px); }
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        ::placeholder { color: rgba(229,232,239,0.3); }
+        html { scroll-behavior: smooth; }
+
+        /* Buttons */
+        .btn-primary {
+          background: #FFB800; color: #002583; font-weight: 700;
+          padding: 12px 28px; border-radius: 30px; font-size: 14px;
+          display: inline-flex; align-items: center; gap: 8px;
+          transition: opacity 0.2s; border: none; cursor: pointer;
+        }
+        .btn-primary:hover { opacity: 0.85; }
+        .btn-outline {
+          background: transparent; color: #E5E8EF; font-weight: 600;
+          padding: 12px 28px; border-radius: 30px; font-size: 14px;
+          border: 1.5px solid rgba(229,232,239,0.3);
+          display: inline-flex; align-items: center; gap: 8px;
+          transition: border-color 0.2s;
+        }
+        .btn-outline:hover { border-color: #FFB800; }
+        .btn-submit {
+          font-weight: 700; font-size: 15px; border: none;
+          border-radius: 30px; padding: 14px 32px;
+          transition: opacity 0.2s, background 0.3s;
+          display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-submit:hover { opacity: 0.85; }
+
+        /* Social icons */
+        .social-icon {
+          width: 44px; height: 44px; border-radius: 50%;
+          border: 1.5px solid rgba(255,184,0,0.4);
+          display: flex; align-items: center; justify-content: center;
+          color: #FFB800; text-decoration: none;
+          font-size: 14px; font-weight: 700; font-family: monospace;
+          transition: background 0.2s;
+        }
+        .social-icon:hover { background: rgba(255,184,0,0.15); }
+
+        /* Cards */
+        .project-card { transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s; }
+        .project-card:hover {
+          transform: translateY(-6px);
+          border-color: rgba(255,184,0,0.5) !important;
+          box-shadow: 0 16px 40px rgba(255,184,0,0.12);
+        }
+        .review-card { transition: transform 0.3s, border-color 0.3s; }
+        .review-card:hover { transform: translateY(-4px); border-color: rgba(255,184,0,0.4) !important; }
+        .journey-card { transition: border-color 0.3s; }
+        .journey-card:hover { border-color: rgba(255,184,0,0.4) !important; }
+
+        /* Tech tags */
+        .tech-tag {
+          font-size: 12px; padding: 5px 14px; border-radius: 20px;
+          background: rgba(0,37,131,0.6); border: 1px solid rgba(255,184,0,0.25);
+          color: rgba(229,232,239,0.8); transition: border-color 0.2s, color 0.2s; cursor: default;
+        }
+        .tech-tag:hover { border-color: #FFB800; color: #FFB800; }
+
+        /* Links */
+        .link-gold {
+          font-size: 13px; font-weight: 600; color: #FFB800;
+          text-decoration: none; transition: opacity 0.2s;
+        }
+        .link-gold:hover { opacity: 0.8; }
+
+        /* Form inputs */
+        .form-input {
+          width: 100%; padding: 12px 16px; border-radius: 10px;
+          background: rgba(0,37,131,0.4); border: 1px solid rgba(255,184,0,0.2);
+          color: #E5E8EF; font-size: 14px; outline: none;
+          box-sizing: border-box; transition: border-color 0.2s;
+          display: block;
+        }
+        .form-input:focus { border-color: #FFB800; }
+
+        /* WhatsApp badge */
+        .wa-badge {
+          display: flex; align-items: center; gap: 12px;
+          background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.35);
+          border-radius: 14px; padding: 14px 20px; margin-bottom: 2rem;
+          text-decoration: none; transition: background 0.2s;
+        }
+        .wa-badge:hover { background: rgba(37,211,102,0.18); }
+
+        /* Footer links */
+        .footer-link {
+          background: none; border: none; cursor: pointer;
+          color: rgba(229,232,239,0.5); font-size: 12px;
+          text-transform: capitalize; transition: color 0.2s;
+        }
+        .footer-link:hover { color: #FFB800; }
+
+        /* Responsive */
         @media (max-width: 768px) {
           .hero-grid { grid-template-columns: 1fr !important; }
           .hero-illus { display: none !important; }
           .about-grid { grid-template-columns: 1fr !important; }
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::placeholder { color: rgba(229,232,239,0.3); }
-        html { scroll-behavior: smooth; }
       `}</style>
     </div>
   );
