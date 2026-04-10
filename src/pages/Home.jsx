@@ -4,19 +4,36 @@ import React from "react";
 // ─── Brand Colors ────────────────────────────────────────────────────────────
 // Navy: #002583  |  Light: #E5E8EF  |  Gold: #FFB800
 
-// ─── SVG Logo (MD-CODES) ─────────────────────────────────────────────────────
-const MDCodesLogo = ({ size = 40 }) => (
-  <img
-    src="/logo.png"
-    alt="MD-CODES Logo"
-    style={{
-      height: size,
-      width: "auto",
-      maxWidth: "160px",
-      objectFit: "contain",
-      display: "block",
-    }}
-  />
+// ─── Logo (image + MD-Codes text) ────────────────────────────────────────────
+const MDCodesLogo = ({ size = 40, showText = true }) => (
+  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <img
+      src="/logo.png"
+      alt=""
+      style={{
+        height: size,
+        width: size,
+        minWidth: size,
+        objectFit: "contain",
+        display: "block",
+        flexShrink: 0,
+      }}
+      onError={e => { e.target.style.display = "none"; }}
+    />
+    {showText && (
+      <span style={{
+        fontSize: size * 0.6,
+        fontWeight: 800,
+        color: "#FFB800",
+        letterSpacing: "0.06em",
+        lineHeight: 1,
+        whiteSpace: "nowrap",
+        fontFamily: "'Segoe UI', system-ui, sans-serif",
+      }}>
+        MD-Codes
+      </span>
+    )}
+  </div>
 );
 
 // ─── Static Data (outside component to avoid re-creation on each render) ─────
@@ -204,7 +221,7 @@ const Navbar = ({ active }) => {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         height: 64, minWidth: 0
       }}>
-        {/* Logo button — flex-shrink allows it to compress, min-width:0 prevents overflow */}
+        {/* Logo + text lockup */}
         <button
           onClick={() => scrollTo("home")}
           style={{
@@ -213,7 +230,7 @@ const Navbar = ({ active }) => {
             flexShrink: 1, minWidth: 0, padding: 0
           }}
         >
-          <MDCodesLogo size={36} />
+          <MDCodesLogo size={48} showText={true} />
         </button>
 
         <div style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }} className="nav-desktop">
@@ -636,7 +653,7 @@ export default function PortfolioPage() {
       {/* ── FOOTER ─────────────────────────────────────────────────────────────── */}
       <footer style={{ borderTop: "1px solid rgba(255,184,0,0.15)", padding: "2.5rem 1.5rem", textAlign: "center" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16 }}>
-          <MDCodesLogo size={30} />
+          <MDCodesLogo size={52} showText={true} />
         </div>
         <div style={{ display: "flex", justifyContent: "center", gap: 20, flexWrap: "wrap" }}>
           {NAV_LINKS.map(l => (
