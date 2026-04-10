@@ -347,7 +347,7 @@ export default function PortfolioPage() {
             </p>
 
             <div style={{ display: "flex", gap: "2rem", marginBottom: "2rem" }}>
-              {[["5+","Projects"], ["20+","Repositories"], ["1+","Years Exp"]].map(([n, l]) => (
+              {[["10+","Projects"], ["20+","Repositories"], ["3+","Years Exp"]].map(([n, l]) => (
                 <div key={l}>
                   <div style={{ fontSize: "2rem", fontWeight: 800, color: "#FFB800" }}>{n}</div>
                   <div style={{ fontSize: 13, color: "rgba(229,232,239,0.6)" }}>{l}</div>
